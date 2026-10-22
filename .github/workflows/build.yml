@@ -23,28 +23,33 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     
+    - uses: actions/setup-node@v4
+      with:
+        node-version: "24.22.1"
+
     # Install Dependencies
     - name: Debug
       run: ls
       
     # Install Dependencies
     - name: Install Dependencies
-      run: npm install
+      run: npx --yes yarn@1.22.22 install --frozen-lockfile
     
     # Build
     - name: Build
-      run: npm run build
+      run: npx --yes yarn@1.22.22 build
     
     # Upload artifact for review
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v4
       with:
         name: site_build
         path: ./client/build
     
     # Deploy to Github Pages
     - name: Github Pages 🚀
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
